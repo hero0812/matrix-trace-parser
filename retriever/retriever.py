@@ -50,6 +50,7 @@ def parse():
                 db.insert(t)
                 os.remove('temp.json')
 
+    print("方法耗时排行###")
 
 # 创建存放文件夹
 # def create_trace_dir():

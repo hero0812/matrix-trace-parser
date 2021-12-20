@@ -24,3 +24,12 @@ def insert(x):
     insertSQL = '''insert into TRACE(key,stack,date) values(?,?,?)'''
     conn.execute(insertSQL, x)
     conn.commit()
+
+
+# 查询累计排名前三的方法
+def rank(limit=3):
+    querySQL = '''select key  from TRACE limit ?'''
+    args = []
+    args.insert(0, limit)
+    result = conn.execute(querySQL, args)
+    return result.fetchall()
