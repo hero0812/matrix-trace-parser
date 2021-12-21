@@ -5,8 +5,7 @@ from mapping import mapper
 
 global __line_format
 
-__line_format = "[%s 执行次数:%s 总耗时:%sms]\r\n\r\n"
-__line_format2 = "[%s %s %sms]\r\n\r\n"
+__line_format = "[%s 执行次数:%s 总耗时:%sms]\r\n"
 
 global _mapping
 
@@ -40,7 +39,6 @@ def parse_stack(stack_trace):
     for i in range(0, len(stack_array) - 1):
         stack = stack_array[i]
         methods = stack.split(',')
-        # print((('* ' * int(methods[0])) + __line_format2 % (methods[1], methods[2], methods[3])))
         print((('* ' * int(methods[0])) + __line_format % (mapper.mapping(methods[1]), methods[2], methods[3])))
 
 

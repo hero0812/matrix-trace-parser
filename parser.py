@@ -30,12 +30,12 @@ def main():
             print("Invalid param -mapping . ", e)
     mapper.init_method_map()
     retriever.retrieve(offline)
-    print("方法耗时排行###")
-    show_rank()
+    while True:
+        handle_next(3)
 
 
 def show_rank():
-    global __method_stack_key
+    print("方法耗时排行###")
     result = mysqlite.rank(3)
     for i in range(0, len(result)):
         print("第%d名: 场景:%s 方法:%s 统计:%d次" % (
@@ -44,21 +44,23 @@ def show_rank():
             mapper.mapping(str(result[i][1]).replace('|', '')),
             result[i][2]
         ))
-    index = eval(input('输入编号查看方法堆栈详情 :\n'))
-    __method_stack_key = result[index - 1][1]
-    next_step = show_detail(__method_stack_key, __offset)
-    handle_next(next_step)
+    return result
 
 
 def handle_next(next_step):
     global __offset
+    global __method_stack_key
     if next_step == 1:
         exit(0)
     elif next_step == 2:
         __offset += 1
-        show_detail(__method_stack_key, __offset)
+        next_step = show_detail(__method_stack_key, __offset)
+        handle_next(next_step)
     else:
-        show_rank()
+        result = show_rank()
+        index = eval(input('输入编号查看方法堆栈详情 :\n'))
+        __method_stack_key = result[index - 1][1]
+        handle_next(2)
 
 
 def show_detail(method_stack_key, offset):
