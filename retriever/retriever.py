@@ -31,7 +31,7 @@ def retrieve(offline_mode):
         print("start parse %d" % (i + 1))
         file_url = data[i]
         res = requests.get(file_url, headers=headers)
-        print('开始保存 %s' % res.text)
+        print('%s' % res.text)
         file_name = 'temp.json'
         f = open(file_name, 'w')
         f.write(res.text)

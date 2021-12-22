@@ -1,4 +1,5 @@
-# 生成方法映射表
+"""生成方法映射表"""
+
 import os.path
 import sys
 from mapping import mapper
