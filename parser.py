@@ -35,17 +35,18 @@ def main():
         handle_next(3)
 
 
-def show_rank():
-    print("方法耗时排行###")
-    result = mysqlite.rank(3)
+def show_rank(issue_type):
+    print("方法统计排行###")
+    result = mysqlite.rank(issue_type)
     if len(result) == 0:
         print("本地数据库没有数据～")
         return None
     for i in range(0, len(result)):
-        print("第%d名: 方法:%s 统计:%d次" % (
+        print("第%d名: 类型:%s 方法:%s 统计:%d次" % (
             i + 1,
-            mapper.mapping(str(result[i][1]).replace('|', '')),
-            result[i][2]
+            result[i][0],
+            mapper.mapping(str(result[i][2]).replace('|', '')),
+            result[i][3]
         ))
     return result
 
@@ -61,11 +62,18 @@ def handle_next(next_step):
         next_step = show_detail(__method_stack_key, __offset)
         handle_next(next_step)
     else:
-        result = show_rank()
+        type_num = eval(input('输入要查看issue类型：1. ANR、2. 普通慢方法:\n'))
+        type_str = 'ANR'
+        if type_num == 1:
+            type_str = 'ANR'
+        elif type_num == 2:
+            type_str = 'NORMAL'
+
+        result = show_rank(type_str)
         if result is None:
             handle_next(1)
         index = eval(input('输入编号查看方法堆栈详情 :\n'))
-        __method_stack_key = result[index - 1][1]
+        __method_stack_key = result[index - 1][2]
         __offset = -1
         handle_next(2)
 
@@ -75,7 +83,7 @@ def show_detail(method_stack_key, offset):
     if len(method_stack) == 0:
         print("没有更多数据")
     else:
-        mapper.parse_stack(method_stack[0])
+        mapper.parse_stack(method_stack)
     next_step = eval(input('输入1/2/3 :\n'))
     return next_step
 

@@ -39,19 +39,19 @@ def retrieve(offline_mode):
 
         with open("temp.json", "r", encoding='utf-8') as f:
             line_mode = read_by_line(f)
-            if not line_mode:
-                try:
-                    jsonObj = json.load(f)
-                    value = jsonObj['content']
-                    print("read file ==> ", jsonObj)
-                    if not jsonObj['tag'] == 'Trace_EvilMethod':
-                        print('not Trace_EvilMethod tag')
-                        break
-                    t = (value['stackKey'], value['stack'], value['time'])
-                    db.insert(t)
-                    os.remove('temp.json')
-                except Exception as jsonError:
-                    print(jsonError)
+            # if not line_mode:
+            #     try:
+            #         jsonObj = json.load(f)
+            #         value = jsonObj['content']
+            #         print("read file ==> ", jsonObj)
+            #         if not jsonObj['tag'] == 'Trace_EvilMethod':
+            #             print('not Trace_EvilMethod tag')
+            #             break
+            #         t = (value['stackKey'], value['stack'], value['time'])
+            #         db.insert(t)
+            #         os.remove('temp.json')
+            #     except Exception as jsonError:
+            #         print(jsonError)
 
 
 def read_by_line(f):
@@ -75,12 +75,16 @@ def read_by_line(f):
                 continue
             if 'stackKey' not in value:
                 continue
+            if 'threadStack' not in value:
+                threadStack = "No available thread stack information."
+            else:
+                threadStack = value['threadStack']
             if 'scene' not in value:
                 scene = "unknown"
             else:
                 scene = value['scene']
-            d = {'key': value['stackKey'], 'scene': scene, 'date': value['time'],
-                 'method_stack': value['stack']}
+            d = {'key': value['stackKey'], 'scene': scene, 'type': value['detail'], 'date': value['time'],
+                 'method_stack': value['stack'], 'thread_stack': threadStack}
             db.insert(d)
 
     if line_mode:
