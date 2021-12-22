@@ -19,18 +19,19 @@ headers = {
 
 def retrieve(offline_mode):
     """retrieve trace json file from qiniu server"""
-    print("start retrieve offline mode %s" % offline_mode)
-    if offline_mode:
+    print("start retrieve offline " + offline_mode)
+    if offline_mode == 'True':
+        print("return offline " + offline_mode)
         return
     global headers
     data = retriever.provide()
     list_size = len(data)
-
+    print("list_size %d" % list_size)
     for i in range(0, list_size):
-        # print("start parse %d", i + 1)
+        print("start parse %d" % (i + 1))
         file_url = data[i]
         res = requests.get(file_url, headers=headers)
-        # print('开始保存')
+        print('开始保存 %s' % res.text)
         file_name = 'temp.json'
         f = open(file_name, 'w')
         f.write(res.text)
