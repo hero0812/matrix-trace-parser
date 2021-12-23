@@ -9,7 +9,7 @@ global __line_format
 __line_format = "[%s \r\t\t%s:%sms]"
 
 global version_code
-version_code = '2.6.4'
+version_code = '2.06.05_8129'
 
 global _mapping
 
