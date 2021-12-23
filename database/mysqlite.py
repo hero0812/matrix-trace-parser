@@ -1,12 +1,10 @@
 import os.path
 import sqlite3
-import sys
 
 global conn
 
 
 def init(offline):
-    print('init sqlite parser.offline %s' % offline)
     global conn
     if os.path.exists('trace.db'):
         if offline == 'True':
@@ -67,4 +65,4 @@ def query_method_stack(key, offset=0):
 
 
 if __name__ == '__main__':
-    init()
+    init(False)

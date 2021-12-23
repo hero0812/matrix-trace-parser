@@ -6,11 +6,14 @@ from mapping import mapper
 
 global __line_format
 
-__line_format = "[%s :%s :%sms]"
+__line_format = "[%s \r\t\t%s:%sms]"
+
+global version_code
+version_code = '2.6.4'
 
 global _mapping
 
-_mapping = '/Users/antonzhang/Desktop/methodMapping.txt'
+_mapping = '/Users/antonzhang/Desktop/mapping/' + version_code + '/methodMapping.txt'
 
 global mapping_dict
 mapping_dict = {}
@@ -31,8 +34,6 @@ def init_method_map():
         for line in mapping_file:
             split_params = line.split(',')
             mapping_dict[split_params[0]] = split_params[2]
-
-    print("mapping_dict ", len(mapping_dict))
 
 
 def parse_stack(stack_trace):

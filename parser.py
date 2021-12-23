@@ -17,7 +17,7 @@ def main():
     args = sys.argv
     index_mapping = check_argv('-mapping')
     index_offline = check_argv('-offline')
-    offline = False
+    offline = 'False'
     if index_offline > 0:
         offline = args[index_offline + 1]
         print("arg offline %s" % offline)
@@ -39,7 +39,7 @@ def show_rank(issue_type):
     print("方法统计排行###")
     result = mysqlite.rank(issue_type)
     if len(result) == 0:
-        print("本地数据库没有数据～")
+        print("没有数据～")
         return None
     for i in range(0, len(result)):
         print("第%d名: 类型:%s 方法:%s 统计:%d次" % (
@@ -52,7 +52,6 @@ def show_rank(issue_type):
 
 
 def handle_next(next_step):
-    print("####handle_next %d" % next_step)
     global __offset
     global __method_stack_key
     if next_step == 1:
@@ -71,7 +70,7 @@ def handle_next(next_step):
 
         result = show_rank(type_str)
         if result is None:
-            handle_next(1)
+            handle_next(3)
         index = eval(input('输入编号查看方法堆栈详情 :\n'))
         __method_stack_key = result[index - 1][2]
         __offset = -1
@@ -84,7 +83,7 @@ def show_detail(method_stack_key, offset):
         print("没有更多数据")
     else:
         mapper.parse_stack(method_stack)
-    next_step = eval(input('输入1/2/3 :\n'))
+    next_step = eval(input('输入1:exit 2:下一个 3:返回上一步 :\n'))
     return next_step
 
 

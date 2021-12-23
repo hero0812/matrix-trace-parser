@@ -26,12 +26,11 @@ def retrieve(offline_mode):
     global headers
     data = retriever.provide()
     list_size = len(data)
-    print("list_size %d" % list_size)
     for i in range(0, list_size):
         print("start parse %d" % (i + 1))
         file_url = data[i]
         res = requests.get(file_url, headers=headers)
-        print('%s' % res.text)
+        # print('%s' % res.text)
         file_name = 'temp.json'
         f = open(file_name, 'w')
         f.write(res.text)
