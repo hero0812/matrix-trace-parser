@@ -114,17 +114,31 @@ def read_by_line(f):
                 print('not Trace_EvilMethod tag')
                 continue
             if 'stackKey' not in value:
-                continue
+                stackKey = '0'
+            else:
+                stackKey = value['stackKey']
+
+            if 'stack' not in value:
+                stack = 'no available information'
+            else:
+                stack = value['stack']
+
             if 'threadStack' not in value:
                 threadStack = "No available thread stack information."
             else:
                 threadStack = value['threadStack']
+
             if 'scene' not in value:
                 scene = "unknown"
             else:
                 scene = value['scene']
-            d = {'key': value['stackKey'], 'scene': scene, 'type': value['detail'], 'date': value['time'],
-                 'version': version, 'method_stack': value['stack'], 'thread_stack': threadStack}
+
+            detail_type = value['detail']
+            if 'ANR' != detail_type:
+                detail_type = "NORMAL"
+
+            d = {'key': stackKey, 'scene': scene, 'type': detail_type, 'date': value['time'],
+                 'version': version, 'method_stack': stack, 'thread_stack': threadStack}
             db.insert(d)
 
     return line_mode
