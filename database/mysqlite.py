@@ -4,7 +4,7 @@ import sqlite3
 global conn
 
 
-def init(offline):
+def init(offline='False'):
     global conn
     if os.path.exists('trace.db'):
         if offline == 'True':
@@ -33,13 +33,13 @@ def create_db_conn():
 
 def insert(x):
     global conn
-    insertSQL = '''insert into TRACE(key,scene,type,method_stack,date,thread_stack) values(?,?,?,?,?,?)'''
-    t = (x['key'], x['scene'], x['type'], x['method_stack'], x['date'], x['thread_stack'])
+    insertSQL = '''insert into TRACE(key,scene,type,method_stack,date,version,thread_stack) values(?,?,?,?,?,?,?)'''
+    t = (x['key'], x['scene'], x['type'], x['method_stack'], x['date'], x['version'], x['thread_stack'])
     conn.execute(insertSQL, t)
     conn.commit()
 
 
-# 查询累计排名前三的方法
+# 查询方法排名
 def rank(issue_type='ANR'):
     global conn
     querySQL = '''select type,scene,key ,count(key) as count from TRACE 
@@ -52,7 +52,7 @@ def rank(issue_type='ANR'):
 
 def query_method_stack(key, offset=0):
     global conn
-    print("query_method_stack_detail key:%s offset:%d " % (key, offset))
+    print("query_method_stack key:%s offset:%d " % (key, offset))
     querySQL = '''select method_stack,thread_stack from TRACE where key = ?'''
     args = []
     args.insert(0, key)
@@ -62,6 +62,18 @@ def query_method_stack(key, offset=0):
         return {}
     else:
         return result_list[offset]
+
+
+def query_version():
+    global conn
+    querySQL = '''select version from TRACE limit 1'''
+    result = conn.execute(querySQL)
+    result_list = result.fetchall()
+    version_code = 0
+    if len(result_list) > 0:
+        version_code = result_list[0]
+    print("query version :%s " % version_code)
+    return version_code
 
 
 if __name__ == '__main__':

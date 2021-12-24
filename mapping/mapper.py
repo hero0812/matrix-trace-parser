@@ -3,17 +3,14 @@
 import os.path
 import sys
 from mapping import mapper
+from retriever import retriever
 
 global __line_format
-
 __line_format = "[%s \r\t\t%s:%sms]"
 
-global version_code
-version_code = '2.06.05_8129'
-
-global _mapping
-
-_mapping = '/Users/antonzhang/Desktop/mapping/' + version_code + '/methodMapping.txt'
+global _mapping, _mapping_path
+_mapping = None
+_mapping_path = None
 
 global mapping_dict
 mapping_dict = {}
@@ -26,10 +23,30 @@ def set_mapping_file(file):
     _mapping = file
 
 
+def set_version_code(version):
+    global _mapping_path
+    _mapping_path = os.getcwd() + '/methodMapping/' + version + '/methodMapping.txt'
+    if not os.path.exists(_mapping_path):
+        # 本地没有mapping文件尝试从server下载
+        mapping_server_url = 'http://download.ngrok.mangatoon.mobi:8091/production/mangatoon/' \
+                             + version \
+                             + '/portuguese/mapping/mangatoon_portugueseRelease/methodMapping.txt'
+        result = retriever.get(mapping_server_url)
+        print("download mapping from %s" % mapping_server_url)
+        print("download result ==> %s" % result)
+        f = open(_mapping_path, 'w')
+        f.write(result.text)
+        f.close()
+
+
 def init_method_map():
+    global _mapping
+    if _mapping is None:
+        _mapping = _mapping_path
     if not os.path.exists(_mapping):
         raise Exception('params error. methodMapping.txt must be set!')
 
+    print("init method map with : %s" % _mapping)
     with open(_mapping) as mapping_file:
         for line in mapping_file:
             split_params = line.split(',')

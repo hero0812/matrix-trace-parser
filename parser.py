@@ -15,9 +15,14 @@ __method_stack_key = ''
 def main():
     print("####start main####")
     args = sys.argv
-    index_mapping = check_argv('-mapping')
-    index_offline = check_argv('-offline')
-    offline = 'False'
+    index_mapping = check_argv('-mappingFile')
+    index_offline = check_argv('-offlineMode')
+    index_version = check_argv('-apkVersion')
+    offline = 'True'
+    apk_version = '2.06.04.8080'
+    if index_version > 0:
+        apk_version = args[index_version + 1]
+        print("arg apk_version %s" % apk_version)
     if index_offline > 0:
         offline = args[index_offline + 1]
         print("arg offline %s" % offline)
@@ -28,9 +33,10 @@ def main():
             mapper.set_mapping_file(mappingFile)
         except IndexError as e:
             print("Invalid param -mapping . " % e)
-    mysqlite.init(offline)
+    mysqlite.init()
+    version_code = retriever.retrieve(offline, apk_version)
+    mapper.set_version_code(version_code)  # 应该做成元组，支持多个版本号
     mapper.init_method_map()
-    retriever.retrieve(offline)
     while True:
         handle_next(3)
 
@@ -42,9 +48,9 @@ def show_rank(issue_type):
         print("没有数据～")
         return None
     for i in range(0, len(result)):
-        print("第%d名: 类型:%s 方法:%s 统计:%d次" % (
+        print("第%d名: 场景:%s 方法:%s 统计:%d次" % (
             i + 1,
-            result[i][0],
+            result[i][1],
             mapper.mapping(str(result[i][2]).replace('|', '')),
             result[i][3]
         ))
