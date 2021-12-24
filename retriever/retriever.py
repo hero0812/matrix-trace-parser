@@ -119,12 +119,12 @@ def read_by_line(f):
                 stackKey = value['stackKey']
 
             if 'stack' not in value:
-                stack = 'no available information'
+                stack = 'unknown'
             else:
                 stack = value['stack']
 
             if 'threadStack' not in value:
-                threadStack = "No available thread stack information."
+                threadStack = "unknown"
             else:
                 threadStack = value['threadStack']
 

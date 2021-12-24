@@ -6,7 +6,7 @@ from mapping import mapper
 from retriever import retriever
 
 global __line_format
-__line_format = "[%s \r\t\t%s:%sms]"
+__line_format = "[%s\t\t\t%s:%sms]"
 
 global _mapping, _mapping_path
 _mapping = None
@@ -56,17 +56,17 @@ def init_method_map():
 def parse_stack(stack_trace):
     print('方法堆栈堆栈信息:')
     stack_array = stack_trace[0].split('\n')
-    if len(stack_array) > 1:
+    if stack_array[0] != 'unknown':
         for i in range(0, len(stack_array) - 1):
             stack = stack_array[i]
             methods = stack.split(',')
-            print((('*' * int(methods[0])) + __line_format % (mapper.mapping(methods[1]), methods[2], methods[3])))
+            print(('*' * int(methods[0])) + __line_format % (mapper.mapping(methods[1]), methods[2], methods[3]))
     else:
         print('no available information.')
 
     thread_stack_str = stack_trace[1]
     print('UI线程堆栈信息:')
-    if len(thread_stack_str) > 1:
+    if thread_stack_str != 'unknown':
         thread_stack_array = thread_stack_str.split('\n')
         for i in range(0, len(thread_stack_array) - 1):
             print('-> %s' % thread_stack_array[i])
