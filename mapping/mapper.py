@@ -54,15 +54,19 @@ def init_method_map():
 
 
 def parse_stack(stack_trace):
+    print('方法堆栈堆栈信息:')
     stack_array = stack_trace[0].split('\n')
-    for i in range(0, len(stack_array) - 1):
-        stack = stack_array[i]
-        methods = stack.split(',')
-        print((('*' * int(methods[0])) + __line_format % (mapper.mapping(methods[1]), methods[2], methods[3])))
+    if len(stack_array) > 1:
+        for i in range(0, len(stack_array) - 1):
+            stack = stack_array[i]
+            methods = stack.split(',')
+            print((('*' * int(methods[0])) + __line_format % (mapper.mapping(methods[1]), methods[2], methods[3])))
+    else:
+        print('no available information.')
 
     thread_stack_str = stack_trace[1]
     print('UI线程堆栈信息:')
-    if len(thread_stack_str) > 0:
+    if len(thread_stack_str) > 1:
         thread_stack_array = thread_stack_str.split('\n')
         for i in range(0, len(thread_stack_array) - 1):
             print('-> %s' % thread_stack_array[i])
