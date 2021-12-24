@@ -73,7 +73,7 @@ def retrieve(offline, apk_version):
     if offline_mode == 'False':
         for i in range(0, list_size):
             file_url = data[1][i]
-            print("start parse url :%d. %s " % (i + 1, file_url))
+            # print("start parse url :%d. %s " % (i + 1, file_url))
             res = get(file_url)
             file_name = 'temp.json'
             f = open(file_name, 'w')
@@ -84,7 +84,7 @@ def retrieve(offline, apk_version):
     else:
         for i in range(0, list_size):
             local_file_name = __locale_list_dir + data[0] + '/' + data[1][i]
-            print("start parse file: %d. %s " % (i + 1, local_file_name))
+            # print("start parse file: %d. %s " % (i + 1, local_file_name))
             with open(local_file_name, "r", encoding='utf-8') as f:
                 read_by_line(f)
     return version
