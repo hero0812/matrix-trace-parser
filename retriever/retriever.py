@@ -134,10 +134,28 @@ def read_by_line(f):
                 scene = value['scene']
 
             detail_type = value['detail']
-            if 'ANR' != detail_type:
+            if str(detail_type).find('ANR') < 0:
                 detail_type = "NORMAL"
+            else:
+                detail_type = "ANR"
 
-            d = {'key': stackKey, 'scene': scene, 'type': detail_type, 'date': value['time'],
+            device_info = 'unknown'
+            if 'machine' in value:
+                device_info = value['machine']
+            cpu_usage = ''
+            if 'usage' in value:
+                cpu_usage = value['usage']
+
+            mem_total = ''
+            if 'mem' in value:
+                mem_total = value['mem']
+
+            mem_free = ''
+            if 'mem_free' in value:
+                mem_free = value['mem_free']
+
+            d = {'key': stackKey, 'scene': scene, 'type': detail_type, 'device_info': device_info,
+                 'date': value['time'], 'cpu_usage': cpu_usage, 'mem_total': mem_total, 'mem_free': mem_free,
                  'version': version, 'method_stack': stack, 'thread_stack': threadStack}
             db.insert(d)
 

@@ -11,7 +11,6 @@ global __offset, __method_stack_key
 __offset = -1
 __method_stack_key = ''
 
-
 global type_str
 type_str = 'ANR'
 
@@ -87,14 +86,47 @@ def handle_next(next_step):
         handle_next(2)
 
 
-def show_detail(detail_type, method_stack_key, offset):
-    method_stack = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
-    if len(method_stack) == 0:
-        print("没有更多数据")
+def show_thread_stack_info(thread_stack_str):
+    print('UI线程堆栈信息:')
+    if thread_stack_str != 'unknown':
+        thread_stack_array = thread_stack_str.split('\n')
+        for i in range(0, len(thread_stack_array) - 1):
+            print('-> %s' % thread_stack_array[i])
     else:
-        mapper.parse_stack(method_stack)
-    next_step = eval(input('输入1:exit 2:下一个 3:返回上一步 :\n'))
-    return next_step
+        print('no available information.')
+
+
+def show_device_info(device_info=None, cpu_info=None, mem_info_total=None, mem_info_use=None):
+    print('设备信息:')
+    print('device_info %s' % device_info)
+    print('cpu_info %s' % cpu_info)
+    print('mem_info：[total:%s use: %s]' % (mem_info_total, mem_info_use))
+
+
+def show_detail(detail_type, method_stack_key, offset):
+    next_step = 1
+    result_tuple = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
+
+    # parse method stack
+    method_stack = result_tuple[0]
+    mapper.parse_stack(method_stack)
+
+    # show thread stack
+    thread_stack_str = result_tuple[1]
+    show_thread_stack_info(thread_stack_str)
+
+    # show cpu & memory info
+    show_device_info(result_tuple[2], result_tuple[3], result_tuple[4], result_tuple[5])
+
+    # do next
+    input_next_step = eval(input('输入1:exit 2:下一个 3:返回上一步 :\n'))
+    try:
+        next_step = int(input_next_step)
+    except Exception:
+        print('非法输入 %s' % input_next_step)
+        next_step = 3
+    finally:
+        return next_step
 
 
 def check_argv(name_of_arg):

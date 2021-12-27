@@ -24,6 +24,10 @@ def create_db_conn():
                      date INTEGER,
                      scene TEXT,
                      type TEXT,
+                     device_info TEXT,
+                     cpu_usage TEXT,
+                     mem_total TEXT,
+                     mem_free TEXT,
                      version TEXT,
                      key TEXT,
                      method_stack TEXT,
@@ -33,8 +37,10 @@ def create_db_conn():
 
 def insert(x):
     global conn
-    insertSQL = '''insert into TRACE(key,scene,type,method_stack,date,version,thread_stack) values(?,?,?,?,?,?,?)'''
-    t = (x['key'], x['scene'], x['type'], x['method_stack'], x['date'], x['version'], x['thread_stack'])
+    insertSQL = '''insert into TRACE(key,scene,type,device_info,cpu_usage,mem_total,mem_free,method_stack,
+    date,version,thread_stack) values(?,?,?,?,?,?,?,?,?,?,?) '''
+    t = (x['key'], x['scene'], x['type'], x['device_info'], x['cpu_usage'], x['mem_total'], x['mem_free'],
+         x['method_stack'], x['date'], x['version'], x['thread_stack'])
     conn.execute(insertSQL, t)
     conn.commit()
 
@@ -53,7 +59,8 @@ def rank(issue_type='ANR'):
 def query_method_stack(detail_type, key, offset=0):
     global conn
     print("query_method_stack type:%s key:%s offset:%d " % (detail_type, key, offset))
-    querySQL = '''select method_stack,thread_stack from TRACE where type = ? and key = ?'''
+    querySQL = '''select method_stack,thread_stack,device_info,cpu_usage,mem_total,mem_free from TRACE
+     where type = ? and key = ? '''
     args = []
     args.insert(0, detail_type)
     args.insert(1, key)

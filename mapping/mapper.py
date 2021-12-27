@@ -2,11 +2,13 @@
 
 import os.path
 import sys
+from pprint import pprint
+
 from mapping import mapper
 from retriever import retriever
 
 global __line_format
-__line_format = "[%s\t\t\t%s:%sms]"
+__line_format = "[%s\t%s:%sms]"
 
 global _mapping, _mapping_path
 _mapping = None
@@ -53,25 +55,19 @@ def init_method_map():
             mapping_dict[split_params[0]] = split_params[2]
 
 
-def parse_stack(stack_trace):
+def parse_stack(method_trace):
     print('方法堆栈堆栈信息:')
-    stack_array = stack_trace[0].split('\n')
+    stack_array = method_trace.split('\n')
     if stack_array[0] != 'unknown':
         for i in range(0, len(stack_array) - 1):
             stack = stack_array[i]
             methods = stack.split(',')
-            print(('*' * int(methods[0])) + __line_format % (mapper.mapping(methods[1]), methods[2], methods[3]))
+            line = ('-' * (int(methods[0]) - 1)) + ('*' * int(methods[0])) + __line_format % (
+                mapper.mapping(methods[1]), methods[2], methods[3])
+            print(line)
     else:
         print('no available information.')
 
-    thread_stack_str = stack_trace[1]
-    print('UI线程堆栈信息:')
-    if thread_stack_str != 'unknown':
-        thread_stack_array = thread_stack_str.split('\n')
-        for i in range(0, len(thread_stack_array) - 1):
-            print('-> %s' % thread_stack_array[i])
-    else:
-        print('no available information.')
 
 
 def mapping(method_id):
@@ -80,4 +76,4 @@ def mapping(method_id):
     except KeyError:
         return __NO_SUCH_METHOD % method_id
     else:
-        return method_name
+        return str(method_name).replace('\n', '')
