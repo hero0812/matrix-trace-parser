@@ -12,6 +12,10 @@ __offset = -1
 __method_stack_key = ''
 
 
+global type_str
+type_str = 'ANR'
+
+
 def main():
     print("####start main####")
     args = sys.argv
@@ -60,15 +64,15 @@ def show_rank(issue_type):
 def handle_next(next_step):
     global __offset
     global __method_stack_key
+    global type_str
     if next_step == 1:
         exit(0)
     elif next_step == 2:
         __offset += 1
-        next_step = show_detail(__method_stack_key, __offset)
+        next_step = show_detail(type_str, __method_stack_key, __offset)
         handle_next(next_step)
     else:
         type_num = eval(input('输入要查看issue类型：1. ANR、2. 普通慢方法:\n'))
-        type_str = 'ANR'
         if type_num == 1:
             type_str = 'ANR'
         elif type_num == 2:
@@ -83,8 +87,8 @@ def handle_next(next_step):
         handle_next(2)
 
 
-def show_detail(method_stack_key, offset):
-    method_stack = mysqlite.query_method_stack(method_stack_key, offset)
+def show_detail(detail_type, method_stack_key, offset):
+    method_stack = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
     if len(method_stack) == 0:
         print("没有更多数据")
     else:

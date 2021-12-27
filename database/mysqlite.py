@@ -50,12 +50,13 @@ def rank(issue_type='ANR'):
     return result.fetchall()
 
 
-def query_method_stack(key, offset=0):
+def query_method_stack(detail_type, key, offset=0):
     global conn
-    print("query_method_stack key:%s offset:%d " % (key, offset))
-    querySQL = '''select method_stack,thread_stack from TRACE where key = ?'''
+    print("query_method_stack type:%s key:%s offset:%d " % (detail_type, key, offset))
+    querySQL = '''select method_stack,thread_stack from TRACE where type = ? and key = ?'''
     args = []
-    args.insert(0, key)
+    args.insert(0, detail_type)
+    args.insert(1, key)
     result = conn.execute(querySQL, args)
     result_list = result.fetchall()
     if offset >= len(result_list):
