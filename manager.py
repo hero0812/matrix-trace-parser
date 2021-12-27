@@ -88,6 +88,10 @@ def handle_next(next_step):
 
 def show_thread_stack_info(thread_stack_str):
     print('UI线程堆栈信息:')
+    if thread_stack_str is None:
+        print('no available information.')
+        return
+
     if thread_stack_str != 'unknown':
         thread_stack_array = thread_stack_str.split('\n')
         for i in range(0, len(thread_stack_array) - 1):
@@ -96,29 +100,32 @@ def show_thread_stack_info(thread_stack_str):
         print('no available information.')
 
 
-def show_device_info(device_info=None, cpu_info=None, mem_info_total=None, mem_info_use=None):
+def show_device_info(device_info=None, cpu_info=None, mem_info_total=None, mem_info_free=None):
     print('设备信息:')
-    print('device_info %s' % device_info)
-    print('cpu_info %s' % cpu_info)
-    print('mem_info：[total:%s use: %s]' % (mem_info_total, mem_info_use))
+    print('device_info: %s' % device_info)
+    print('cpu_info: %s' % cpu_info)
+    print('mem_info：[total:%s free: %s]' % (mem_info_total, mem_info_free))
 
 
 def show_detail(detail_type, method_stack_key, offset):
     next_step = 1
     result_tuple = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
 
-    # parse method stack
-    method_stack = result_tuple[0]
-    mapper.parse_stack(method_stack)
+    if result_tuple is not None:
+        # parse method stack
+        method_stack = result_tuple[0]
+        mapper.parse_stack(method_stack)
 
-    # show thread stack
-    thread_stack_str = result_tuple[1]
-    show_thread_stack_info(thread_stack_str)
+        # show thread stack
+        thread_stack_str = result_tuple[1]
+        show_thread_stack_info(thread_stack_str)
 
-    # show cpu & memory info
-    show_device_info(result_tuple[2], result_tuple[3], result_tuple[4], result_tuple[5])
+        # show cpu & memory info
+        show_device_info(result_tuple[2], result_tuple[3], result_tuple[4], result_tuple[5])
+    else:
+        print("没有更多数据~")
 
-    # do next
+        # do next
     input_next_step = eval(input('输入1:exit 2:下一个 3:返回上一步 :\n'))
     try:
         next_step = int(input_next_step)

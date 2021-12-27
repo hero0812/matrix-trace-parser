@@ -57,8 +57,12 @@ def init_method_map():
 
 def parse_stack(method_trace):
     print('方法堆栈堆栈信息:')
-    stack_array = method_trace.split('\n')
-    if stack_array[0] != 'unknown':
+    if method_trace is None:
+        print('no available information.')
+        return
+
+    if method_trace != 'unknown':
+        stack_array = method_trace.split('\n')
         for i in range(0, len(stack_array) - 1):
             stack = stack_array[i]
             methods = stack.split(',')
@@ -67,7 +71,6 @@ def parse_stack(method_trace):
             print(line)
     else:
         print('no available information.')
-
 
 
 def mapping(method_id):

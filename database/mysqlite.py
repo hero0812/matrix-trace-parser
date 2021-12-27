@@ -67,7 +67,7 @@ def query_method_stack(detail_type, key, offset=0):
     result = conn.execute(querySQL, args)
     result_list = result.fetchall()
     if offset >= len(result_list):
-        return {}
+        return None
     else:
         return result_list[offset]
 
