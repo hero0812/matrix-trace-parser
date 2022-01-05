@@ -85,4 +85,4 @@ def query_version():
 
 
 if __name__ == '__main__':
-    init(False)
+    init('False')

@@ -83,8 +83,8 @@ def handle_next(next_step):
         __offset += 1
         next_step = show_detail(type_str, __method_stack_key, __offset)
         handle_next(next_step)
-    else:
-        type_num = eval(input('输入要查看issue类型：1. ANR、2. 普通慢方法: 3.StrictMode\n'))
+    elif next_step == 3:
+        type_num = handle_input('输入要查看issue类型：1. ANR、2. 普通慢方法: 3.StrictMode\n', (1, 2, 3))
         if type_num == 1:
             type_str = 'ANR'
         elif type_num == 2:
@@ -94,9 +94,12 @@ def handle_next(next_step):
 
         init_retriever(type_str)
         result = show_rank(type_str)
-        if result is None:
+        if len(result) == 0:
+            print('no available information.')
             handle_next(3)
-        index = eval(input('输入编号查看方法堆栈详情 :\n'))
+            return
+        gen = (n for n in range(1, len(result) + 1))
+        index = handle_input('输入编号查看方法堆栈详情 :\n', tuple(gen))
         __method_stack_key = result[index - 1][2]
         __offset = -1
         handle_next(2)
@@ -137,8 +140,21 @@ def show_strict_mode_thread_stack(thread_stack_str):
         print('no available information.')
 
 
+# 非法输入容错处理
+def handle_input(tip, tuple_choices):
+    input_next_step = -1
+    while True:
+        try:
+            # do next
+            input_next_step = eval(input(tip))
+        except Exception as e:
+            print('别瞎按,请输入正确的指令 ')
+        finally:
+            if input_next_step in tuple_choices:
+                return input_next_step
+
+
 def show_detail(detail_type, method_stack_key, offset):
-    next_step = 1
     result_tuple = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
 
     if result_tuple is not None:
@@ -161,15 +177,7 @@ def show_detail(detail_type, method_stack_key, offset):
     else:
         print("没有更多数据~")
 
-        # do next
-    input_next_step = eval(input('输入1:exit 2:下一个 3:返回上一步 :\n'))
-    try:
-        next_step = int(input_next_step)
-    except Exception:
-        print('非法输入 %s' % input_next_step)
-        next_step = 3
-    finally:
-        return next_step
+    return handle_input('输入1:exit 2:下一个 3:返回上一步 :\n', (1, 2, 3))
 
 
 def check_argv(name_of_arg):
