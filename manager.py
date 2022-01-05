@@ -142,6 +142,9 @@ def show_detail(detail_type, method_stack_key, offset):
     result_tuple = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
 
     if result_tuple is not None:
+        # scene
+        print('场景:%s ' % result_tuple[6])
+
         # parse method stack
         method_stack = result_tuple[0]
         mapper.parse_stack(method_stack)

@@ -58,8 +58,8 @@ def rank(issue_type='ANR'):
 
 def query_method_stack(detail_type, key, offset=0):
     global conn
-    print("query_method_stack type:%s key:%s offset:%d " % (detail_type, key, offset))
-    querySQL = '''select method_stack,thread_stack,device_info,cpu_usage,mem_total,mem_free from TRACE
+    print("type:%s key:%s offset:%d " % (detail_type, key, offset))
+    querySQL = '''select method_stack,thread_stack,device_info,cpu_usage,mem_total,mem_free,scene from TRACE
      where type = ? and key = ? '''
     args = []
     args.insert(0, detail_type)

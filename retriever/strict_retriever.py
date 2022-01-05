@@ -80,14 +80,14 @@ def read_by_line(f):
             else:
                 threadStack = value['threadStack']
 
-            if 'scene' not in value:
+            if 'key' not in value:
                 scene = "unknown"
             else:
-                scene = value['scene']
+                scene = value['key']
 
-            key = 'unknown'
+            sub_type = 'unknown'
             if 'type' in value:
-                key = value['type']
+                sub_type = value['type']
 
             device_info = 'unknown'
             if 'machine' in value:
@@ -104,7 +104,7 @@ def read_by_line(f):
             if 'mem_free' in value:
                 mem_free = value['mem_free']
 
-            d = {'key': key, 'scene': scene, 'type': detail_type, 'device_info': device_info,
+            d = {'key': sub_type, 'scene': scene, 'type': detail_type, 'device_info': device_info,
                  'date': '', 'cpu_usage': cpu_usage, 'mem_total': mem_total, 'mem_free': mem_free,
                  'version': version, 'method_stack': stack,
                  'thread_stack': json.dumps(threadStack, ensure_ascii=False)}
