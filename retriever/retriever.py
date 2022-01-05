@@ -38,7 +38,9 @@ __locale_list_dir = os.getcwd() + '/' + 'resources' + '/'  # 本地模式 trace�
 def provide():
     global version
     if offline_mode == 'True':
-        local_list = os.listdir(__locale_list_dir + version)
+        if version == '':
+            raise Exception("version has not been set")
+        local_list = os.listdir(__locale_list_dir + version + "/TraceCanary")
         print('look up locale_list_dir %s' % local_list)
         return version, local_list
     else:
@@ -82,8 +84,8 @@ def retrieve(offline, apk_version):
             with open("temp.json", "r", encoding='utf-8') as f:
                 read_by_line(f)
     else:
-        for i in range(0, list_size):
-            local_file_name = __locale_list_dir + data[0] + '/' + data[1][i]
+        for file in data[1]:
+            local_file_name = __locale_list_dir + version + "/TraceCanary/" + file
             # print("start parse file: %d. %s " % (i + 1, local_file_name))
             with open(local_file_name, "r", encoding='utf-8') as f:
                 read_by_line(f)

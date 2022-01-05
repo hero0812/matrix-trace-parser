@@ -1,9 +1,10 @@
 # /usr/bin/env python
 """matrix trace解析脚本"""
-
+import json
 import sys
 
 from retriever import retriever
+from retriever import strict_retriever
 from mapping import mapper
 from database import mysqlite
 
@@ -14,15 +15,19 @@ __method_stack_key = ''
 global type_str
 type_str = 'ANR'
 
+global offline, apk_version
+offline = 'True'
+apk_version = '2.06.04.8080'
+
 
 def main():
+    global offline, apk_version
     print("####start main####")
     args = sys.argv
     index_mapping = check_argv('-mappingFile')
     index_offline = check_argv('-offlineMode')
     index_version = check_argv('-apkVersion')
-    offline = 'True'
-    apk_version = '2.06.04.8080'
+
     if index_version > 0:
         apk_version = args[index_version + 1]
         print("arg apk_version %s" % apk_version)
@@ -37,9 +42,7 @@ def main():
         except IndexError as e:
             print("Invalid param -mapping . " % e)
     mysqlite.init()
-    version_code = retriever.retrieve(offline, apk_version)
-    mapper.set_version_code(version_code)  # 应该做成元组，支持多个版本号
-    mapper.init_method_map()
+
     while True:
         handle_next(3)
 
@@ -60,6 +63,16 @@ def show_rank(issue_type):
     return result
 
 
+def init_retriever(event_type):
+    global offline, apk_version
+    if event_type == 'StrictMode':
+        version_code = strict_retriever.retrieve(offline, apk_version)
+    else:
+        version_code = retriever.retrieve(offline, apk_version)
+        mapper.set_version_code(version_code)  # 应该做成元组，支持多个版本号
+        mapper.init_method_map()
+
+
 def handle_next(next_step):
     global __offset
     global __method_stack_key
@@ -71,12 +84,15 @@ def handle_next(next_step):
         next_step = show_detail(type_str, __method_stack_key, __offset)
         handle_next(next_step)
     else:
-        type_num = eval(input('输入要查看issue类型：1. ANR、2. 普通慢方法:\n'))
+        type_num = eval(input('输入要查看issue类型：1. ANR、2. 普通慢方法: 3.StrictMode\n'))
         if type_num == 1:
             type_str = 'ANR'
         elif type_num == 2:
             type_str = 'NORMAL'
+        elif type_num == 3:
+            type_str = 'StrictMode'
 
+        init_retriever(type_str)
         result = show_rank(type_str)
         if result is None:
             handle_next(3)
@@ -107,6 +123,20 @@ def show_device_info(device_info=None, cpu_info=None, mem_info_total=None, mem_i
     print('mem_info：[total:%s free: %s]' % (mem_info_total, mem_info_free))
 
 
+def show_strict_mode_thread_stack(thread_stack_str):
+    print('UI线程堆栈信息:')
+    if thread_stack_str is None:
+        print('no available information.')
+        return
+
+    if thread_stack_str != 'unknown':
+        thread_stack_list = json.loads(thread_stack_str)
+        for method_info in thread_stack_list:
+            print('-> %s#%s ' % (method_info['className'], method_info['methodName']))
+    else:
+        print('no available information.')
+
+
 def show_detail(detail_type, method_stack_key, offset):
     next_step = 1
     result_tuple = mysqlite.query_method_stack(detail_type, method_stack_key, offset)
@@ -118,7 +148,10 @@ def show_detail(detail_type, method_stack_key, offset):
 
         # show thread stack
         thread_stack_str = result_tuple[1]
-        show_thread_stack_info(thread_stack_str)
+        if 'StrictMode' == detail_type:
+            show_strict_mode_thread_stack(thread_stack_str)
+        else:
+            show_thread_stack_info(thread_stack_str)
 
         # show cpu & memory info
         show_device_info(result_tuple[2], result_tuple[3], result_tuple[4], result_tuple[5])
