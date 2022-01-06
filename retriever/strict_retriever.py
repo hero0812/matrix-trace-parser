@@ -80,11 +80,13 @@ def read_by_line(f):
             else:
                 threadStack = value['threadStack']
 
-            if 'key' not in value:
+            if 'scene' not in value:
                 scene = "unknown"
             else:
-                scene = value['key']
-
+                if 'className' in value['scene']:
+                    scene = value['scene']['className']
+                else:
+                    scene = str(value['scene'])
             sub_type = 'unknown'
             if 'type' in value:
                 sub_type = value['type']

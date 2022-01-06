@@ -41,7 +41,6 @@ def main():
             mapper.set_mapping_file(mappingFile)
         except IndexError as e:
             print("Invalid param -mapping . " % e)
-    mysqlite.init()
 
     while True:
         handle_next(3)
@@ -83,7 +82,16 @@ def handle_next(next_step):
         __offset += 1
         next_step = show_detail(type_str, __method_stack_key, __offset)
         handle_next(next_step)
+    elif next_step == 4:
+        __offset += 10
+        next_step = show_detail(type_str, __method_stack_key, __offset)
+        handle_next(next_step)
+    elif next_step == 5:
+        __offset -= 10
+        next_step = show_detail(type_str, __method_stack_key, __offset)
+        handle_next(next_step)
     elif next_step == 3:
+        mysqlite.init()
         type_num = handle_input('输入要查看issue类型：1. ANR、2. 普通慢方法: 3.StrictMode\n', (1, 2, 3))
         if type_num == 1:
             type_str = 'ANR'
@@ -147,11 +155,13 @@ def handle_input(tip, tuple_choices):
         try:
             # do next
             input_next_step = eval(input(tip))
-        except Exception as e:
-            print('别瞎按,请输入正确的指令 ')
+        except Exception:
+            pass
         finally:
             if input_next_step in tuple_choices:
                 return input_next_step
+            else:
+                print('别瞎按,请输入正确的指令 ')
 
 
 def show_detail(detail_type, method_stack_key, offset):
@@ -177,7 +187,7 @@ def show_detail(detail_type, method_stack_key, offset):
     else:
         print("没有更多数据~")
 
-    return handle_input('输入1:exit 2:下一个 3:返回上一步 :\n', (1, 2, 3))
+    return handle_input('输入1:exit 2:下一个 3:返回上一步 4:下一页 5:上一页\n', (1, 2, 3, 4, 5))
 
 
 def check_argv(name_of_arg):
